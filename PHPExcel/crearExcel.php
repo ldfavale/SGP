@@ -672,7 +672,7 @@ $convertir = "sudo /usr/bin/unoconv -f ods ".$archivo.".xls";
 putenv("PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games");
 putenv("UNO_PATH=/usr/bin/unoconv");
 
- exec($convertir);
+exec($convertir);
 
 header("Content-Type: application/vnd.oasis.opendocument.spreadsheet");
 header('Content-Disposition: attachment; filename="'.$archivo.'.ods"');

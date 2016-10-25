@@ -1,19 +1,19 @@
 <?php
 
-/* 
+/*
  * Interaccion con la tabla Reloj en la base del sistema
  * ABML relojes
  * @author Fredd Hannay
  */
 
-require_once ($_SERVER["DOCUMENT_ROOT"] . "/model/Logica/logica.php");
+require_once (APP_DIR."/model/Logica/logica.php");
 require_once ("Conexion.php");
 
 class PReloj extends Conectar {
 
     private static $instance = NULL;
     private $relojes;
-    
+
     public static function getInstance() {
         if (self::$instance == NULL) {
             self::$instance = new PReloj();
@@ -28,7 +28,7 @@ class PReloj extends Conectar {
         $puerto = mysqli_real_escape_string($this->conexion(), $reloj->getpuerto());
         $ip = mysqli_real_escape_string($this->conexion(), $reloj->getip());
         $db = mysqli_real_escape_string($this->conexion(), $reloj->getdb());
-        $idsede = mysqli_real_escape_string($this->conexion(), $reloj->getsede()->getid()); //Obtener id de la sede para la BD        
+        $idsede = mysqli_real_escape_string($this->conexion(), $reloj->getsede()->getid()); //Obtener id de la sede para la BD
 
         $sql = "INSERT INTO `Reloj`(`ID`,`IP`, `PUERTO`, `DB`, `idSede`) VALUES "
                 . "('" . $id . "','" . $ip . "','" . $puerto . "','" . $db . "','" . $idsede ."')";
@@ -40,13 +40,13 @@ class PReloj extends Conectar {
         }
         return "ok";
     }
-    
+
 //    function BajaReloj($id) {
-//        
+//
 //    }
 
     function ModificarReloj(Relojes $reloj) {
-       
+
         $id = mysqli_real_escape_string($this->conexion(), $reloj->getid());
         $puerto = mysqli_real_escape_string($this->conexion(), $reloj->getpuerto());
         $ip = mysqli_real_escape_string($this->conexion(), $reloj->getip());
@@ -76,21 +76,21 @@ class PReloj extends Conectar {
         return $this->relojes; //devolvemos el array que trataremos en la vista
     }
 
-    
-    
+
+
     function BuscarReloj($id) {
 
         $sql = "SELECT * FROM `Reloj` WHERE ID =" . $id;
-        
+
         $resultado = $this->conexion()->query($sql);
-        
+
         if($resultado){
             $fila = $resultado->fetch_assoc();
             $reloj= new Relojes($fila["ID"],$fila["PUERTO"], $fila["IP"],$fila["DB"], $fila["IP"], $fila["idSede"]);
             return $reloj;
         }
         return 0;
-    } 
+    }
 
-        
+
 }

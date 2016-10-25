@@ -1,9 +1,9 @@
 <?php
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Logica/logica.php");
+require_once (APP_DIR."/model/Logica/logica.php");
 require_once('Conexion.php');
 
 class PSede extends Conectar{
-    
+
     private static $instance = NULL;
 
 
@@ -18,17 +18,17 @@ class PSede extends Conectar{
             $nombre = mysqli_real_escape_string($this->conexion(),$sede->getNombre()) ;
             $departamento= mysqli_real_escape_string($this->conexion(),$sede->getDepartamento());
             $telefono= mysqli_real_escape_string($this->conexion(),$sede->getTelefono());
-            $sql = "INSERT INTO `sedes`(`Nombre`, `Departamento`, `Telefono`) VALUES ('".$nombre."','".$departamento."','".$telefono."')";       
-            
+            $sql = "INSERT INTO `sedes`(`Nombre`, `Departamento`, `Telefono`) VALUES ('".$nombre."','".$departamento."','".$telefono."')";
+
             if($this->conexion()->query($sql)){
                return 1;
             }
             return 0;
-            
+
     }
 //    function BorrarSede($nombre){
-//        
-//        $sql = "DELETE * FROM `sedes` WHERE `Nombre`='".mysqli_real_escape_string($this->conexion(),$nombre)."'";       
+//
+//        $sql = "DELETE * FROM `sedes` WHERE `Nombre`='".mysqli_real_escape_string($this->conexion(),$nombre)."'";
 //        if($this->conexion()->query($sql)){
 //               return 1;
 //        }
@@ -40,7 +40,7 @@ class PSede extends Conectar{
             $nombre = mysqli_real_escape_string($this->conexion(),$sede->getNombre()) ;
             $departamento= mysqli_real_escape_string($this->conexion(),$sede->getDepartamento());
             $telefono= mysqli_real_escape_string($this->conexion(),$sede->getTelefono());
-            $sql = "UPDATE `sedes` SET `Nombre`= '".$nombre."', `Departamento`= '".$departamento."', `Telefono`= '".$telefono."' WHERE `idSede`= '".$id."'";       
+            $sql = "UPDATE `sedes` SET `Nombre`= '".$nombre."', `Departamento`= '".$departamento."', `Telefono`= '".$telefono."' WHERE `idSede`= '".$id."'";
 
                 if($this->conexion()->query($sql)){
                    return 1;
@@ -52,11 +52,11 @@ class PSede extends Conectar{
         $id=mysqli_real_escape_string($this->conexion(),$valorid);
         $sql= "select * from `sedes` where `idSede`= '".$id."'";
         $consulta=$this->conexion()->query($sql);
-	
+
         while($filas=$consulta->fetch_assoc()){
 	            $sede[]=$filas;
 	}
-        
+
 	return $sede;
 
     }

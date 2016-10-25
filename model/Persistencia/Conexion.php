@@ -1,5 +1,5 @@
 <?php
-require_once ($_SERVER["DOCUMENT_ROOT"].'/config/database.php');
+require_once (APP_DIR."/config/database.php");
 
     class Conectar extends database{
 

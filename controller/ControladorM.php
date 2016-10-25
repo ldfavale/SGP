@@ -5,9 +5,9 @@
 
  */
 
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Logica/Empleado.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Logica/Marca.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PMarca.php");
+require_once (APP_DIR."/model/Logica/Empleado.php");
+require_once (APP_DIR."/model/Logica/Marca.php");
+require_once (APP_DIR."/model/Persistencia/PMarca.php");
 
 class ControladorM{
 

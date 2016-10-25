@@ -1,11 +1,11 @@
 <?php
 
-/* 
+/*
  * L Privilegio
  * @author Fredd Hannay
  */
 
-require_once ($_SERVER["DOCUMENT_ROOT"] . "/model/Logica/logica.php");
+require_once (APP_DIR."/model/Logica/logica.php");
 require_once ("Conexion.php");
 
 class PPrivilegio extends Conectar {
@@ -22,19 +22,19 @@ class PPrivilegio extends Conectar {
     function ListarPrivilegios() {
 
         $sql = "SELECT * FROM `privilegios`";
-        
-        
+
+
         if($consulta = $this->conexion()->query($sql)){
-            
-            while ($fila = $consulta->fetch_assoc()) {                 
+
+            while ($fila = $consulta->fetch_assoc()) {
             $privilegio = new Privilegio($fila["id"],$fila["Nombre"]);
             $privilegios[] = $privilegio;
-            }  
-            return $privilegios; 
+            }
+            return $privilegios;
         }
-        
+
         return "error";
-        
+
     }
-        
+
 }

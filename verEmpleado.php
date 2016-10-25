@@ -5,7 +5,7 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <?php
-require_once($_SERVER ['DOCUMENT_ROOT']."/controller/Controller.php");
+require_once(APP_DIR."/controller/Controller.php");
 
 $controlador = ControladorE::getInstance();
 $controladorMarcas=  ControladorM::getInstance();
@@ -22,7 +22,7 @@ if(isset($_POST['desde']) and isset($_POST['hasta'])){
 
 //    $desde = date('Y-m-d');
 //    $hasta = $desde;
-   
+
     $desde = date('Y')."-".date('m')."-1";
     $hasta = date('Y-m-d');
 
@@ -40,7 +40,7 @@ if(isset($_POST['BajaEmpleado'])) {
                      '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'.
                      'Ocurrio un error durante la baja intentelo mas tarde</div>';
  }
- 
+
 }
 
 if(isset($_POST['SubirImagen'])) {
@@ -48,7 +48,7 @@ if(isset($_POST['SubirImagen'])) {
     $subirimagen= new SubirImagen();
     $subirimagen->__set("_name", "perfil".$_POST['nick']);
     $subirimagen->init($_FILES['imagen']);
-    
+
 }
 
 //********************************** BUSQUEDA NORMAL ******************************************************
@@ -97,18 +97,18 @@ if (isset($resultado)) {
             {
 ?>
             <div class="col-md-3">
-                
-                <?php 
+
+                <?php
                     $ext=null;
                     $ruta= 'public/img/perfil'.$empleado->getNombreUsuario();
                     if(is_file($ruta.".jpg")) $ext=".jpg";
                     if(is_file($ruta.".gif")) $ext=".gif";
                     if(is_file($ruta.".png")) $ext=".png";
-                    
+
                 ?>
-                
+
                 <img src="<?php echo $ruta.$ext;?>" style="height: 300px; width: 300px;"class="center-block img-circle img-responsive" onerror="this.src='public/img/user_placeholder.png';">
-               
+
 
 <!--            <h3 class="text-center">Informatica</h3>
                 <p class="text-center">Desarrollador</p>-->
@@ -152,7 +152,7 @@ if (isset($resultado)) {
                                     </div>
                                 </form>
                             </li>
-<?php } ?>                            
+<?php } ?>
                         </ol>
                     </div>
                     <div class="col-xs-6">
@@ -174,8 +174,10 @@ if (isset($resultado)) {
                 <form class="form form-inline" action="PHPExcel/crearExcel.php" method="post">
 
                   <input name="id" type="hidden" value="<?php echo $empleado->getid()?>">
-                  <input name="nombre" type="hidden" value="<?php echo $empleado->getnombre()." ".$empleado->getapellido()?>">
+                  <input name="nombre" type="hidden" value="<?php echo $empleado->getnombre()?>">
+                  <input name="apellido" type="hidden" value="<?php echo $empleado->getapellido()?>">
         <!-- Form Name -->
+        <!-- ******************** CONTRALOR *************************************** -->
         <legend>Contralor</legend>
 
         <!-- Select Basic -->

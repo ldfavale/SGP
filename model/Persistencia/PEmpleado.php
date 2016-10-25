@@ -7,7 +7,7 @@
  *   @author Fredd Hannay
  */
 
-require_once ($_SERVER["DOCUMENT_ROOT"] . "/model/Logica/logica.php");
+require_once (APP_DIR."/model/Logica/logica.php");
 require_once ("Conexion.php");
 
 class PEmpleado extends Conectar {

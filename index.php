@@ -31,7 +31,7 @@ if(!isset($_SESSION['id'])){
 															close;
 													}
                     	}
-										}	
+										}
 
                 break;
 
@@ -147,17 +147,17 @@ if(!isset($_SESSION['id'])){
                     <!-- Contenido Dinamico-->
                     <?php
                             if(!isset($_GET['sec'])){
-                                    include ($_SERVER["DOCUMENT_ROOT"]."/"."BuscarEmpleados.php");
+                                    include (APP_DIR."/BuscarEmpleados.php");
                                 }
                                 else{
                                     $sec=$_GET['sec'];
 
-                                    if(file_exists($_SERVER["DOCUMENT_ROOT"]."/".$sec.".php")) {
-                                        include($_SERVER["DOCUMENT_ROOT"]."/".$sec.".php");
+                                    if(file_exists(APP_DIR."/".$sec.".php")) {
+                                        include(APP_DIR."/".$sec.".php");
                                     }
                                     else{
-                                        if(file_exists($_SERVER["DOCUMENT_ROOT"]."/".$sec.".html")){
-                                             include($_SERVER["DOCUMENT_ROOT"]."/".$sec.".html");
+                                        if(file_exists(APP_DIR."/".$sec.".html")){
+                                             include(APP_DIR."/".$sec.".html");
                                         }
                                         else{
                                             echo 'Lo sentimos pero la página solicitada no existe';

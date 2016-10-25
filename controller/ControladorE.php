@@ -10,13 +10,13 @@
  *   @author Fredd Hannay
  */
 
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Logica/logica.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PEmpleado.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PPrivilegio.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PReloj.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/Reloj/FuncReloj.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/Reloj/Reloj.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/funciones/encrypt.php");
+require_once (APP_DIR."/model/Logica/logica.php");
+require_once (APP_DIR."/model/Persistencia/PEmpleado.php");
+require_once (APP_DIR."/model/Persistencia/PPrivilegio.php");
+require_once (APP_DIR."/model/Persistencia/PReloj.php");
+require_once (APP_DIR."/model/Persistencia/Reloj/FuncReloj.php");
+require_once (APP_DIR."/model/Persistencia/Reloj/Reloj.php");
+require_once (APP_DIR."/funciones/encrypt.php");
 
 class ControladorE{
     private static $instance = NULL;
@@ -30,12 +30,12 @@ class ControladorE{
     }
 
     function AltaEmpleado($arg_nick, $arg_privilegio, $arg_nrofuncionario, $arg_nombre, $arg_apellido, $arg_cedula, $arg_direccion, $arg_residencia, $arg_tel, $arg_cel, $arg_correo, $arg_correoinstitucional, $arg_horario, $arg_cargo, $arg_estado,  $arg_arrayrelojes){
-        
+
         //instanciamos la presistenciareloj para poder trabajar en la BD
         $controladorReloj=  ControladorR::getInstance();
         //Se crea instancia de la presistencia empleado
         $persistenciaempleado= PEmpleado::getInstance();
-        
+
     /*******************************Contraseña aleatoria******************************/
         $str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
         $arg_pass = "";
@@ -56,7 +56,7 @@ class ControladorE{
                 $relojes[]=$reloj;
             }
         }
-        
+
         //Se crea el objeto empleado
         $empleado= new Empleado(null,$arg_nick, $encryptpass, $arg_privilegio, $arg_nrofuncionario, $arg_nombre, $arg_apellido, $arg_cedula, $arg_direccion, $arg_residencia, $arg_tel, $arg_cel, $arg_correo, $arg_correoinstitucional, $arg_horario, $arg_cargo, $arg_estado,$relojes);
 
@@ -99,16 +99,16 @@ class ControladorE{
 //           return "ok";
 //        }
 //
-//        return "error";   
-        
+//        return "error";
+
         $mail=new Mailsmtp($arg_correoinstitucional, $arg_pass, $arg_nombre);
         $resultadomail=$mail->sendmail();
         if($resultadomail!=1){
             return "Error: ".$resultadomail;
         }
-        
-        return 1;   
-        
+
+        return 1;
+
     }
 
     function BajaEmpleado($id){
@@ -117,7 +117,7 @@ class ControladorE{
     }
 
     function ModificarEmpleado($arg_id, $arg_nick, $arg_privilegio, $arg_nrofuncionario, $arg_nombre, $arg_apellido, $arg_cedula, $arg_direccion, $arg_residencia, $arg_tel, $arg_cel, $arg_correo, $arg_correoinstitucional, $arg_horario, $arg_cargo, $arg_estado, $arg_arrayrelojes){
-        
+
         //obtenemos los datos viejos para asi guardarlos
         $empleado=$this->obtenerEmpleado($arg_id);
 
@@ -125,7 +125,7 @@ class ControladorE{
         $persistenciaempleado= PEmpleado::getInstance();
         $controladorReloj=  ControladorR::getInstance();
         $relojes=null;
-        
+
         //generamos el array con los ultimos relojes seleccionados
         if(isset($arg_arrayrelojes)){
             foreach ($arg_arrayrelojes as $id){
@@ -138,7 +138,7 @@ class ControladorE{
 
         //Generamos la modificacion
         $modificacion= new Empleado($arg_id,$arg_nick, null, $arg_privilegio, $arg_nrofuncionario, $arg_nombre, $arg_apellido, $arg_cedula, $arg_direccion, $arg_residencia, $arg_tel, $arg_cel, $arg_correo, $arg_correoinstitucional, $arg_horario, $arg_cargo, $arg_estado,$relojes);
-        
+
         //Si es correcta la modificacions se carga al reloj y se guarda en el log
         if($persistenciaempleado->ModificarEmpleado($modificacion)){
             if($relojes!=null){
@@ -157,19 +157,19 @@ class ControladorE{
                     //para cada reloj se agrega a la tabla Empleado-relojes una entrada unica
                     $persistenciaempleado->AltaEmpleadoReloj($modificacion->getid(), $reloj->getid());
                 }
-            
+
             }
-  /// colocar el nombre del administrador que realiza la modificacion           
-            
+  /// colocar el nombre del administrador que realiza la modificacion
+
 
             //si se acepta la modificacion guardamos un log
             $log = new Log("Modificar_empleado",$_SERVER["DOCUMENT_ROOT"]."/logs/");
             $texto= "Adminstrador ID: ".$_SESSION["id"]." Empleado: ".$empleado->toString()." ***Modificacion: ".$modificacion->toString();
             $log->insert($texto, false, false, false);
-            return 1;           
+            return 1;
         }
         //si no es posible la modificacion devolvemos cero
-        return 0;    
+        return 0;
     }
 
     function BuscarEmpleados($busqueda){

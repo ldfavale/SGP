@@ -6,7 +6,7 @@
  *   Ubicacion SGPH/model/logica
  *   @author Fredd Hannay
  */
-require $_SERVER["DOCUMENT_ROOT"].'/libs/PHPMailer/PHPMailerAutoload.php';
+require APP_DIR."/libs/PHPMailer/PHPMailerAutoload.php";
 
 Class Mailsmtp{
 
