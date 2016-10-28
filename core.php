@@ -9,11 +9,11 @@ $base = new database();
 define('DB_HOST',$base->getHost());
 define('DB_USER',$base->getUser());
 define('DB_PASS',$base->getPass());
-define('DB_NAME',$base->getDB());
+define('DB_NAME',$base->getDB()); 
 
-//define('APP_URL',"http://".gethostname()."/");
 define('APP_URL',"http://contralor.cure.edu.uy/");
 define('ABS_PATH',getcwd());
 define('APP_NAME',"SGPH");
 define('APP_DIR',$_SERVER["DOCUMENT_ROOT"]."/".APP_NAME);
+
 ?>
