@@ -1,8 +1,8 @@
 <?php
 
 
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Logica/logica.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PEmpleado.php");
+require_once (APP_DIR."/model/Logica/logica.php");
+require_once (APP_DIR."/model/Persistencia/PEmpleado.php");
 // require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PPrivilegio.php");
 // require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PReloj.php");
 // require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/Reloj/FuncReloj.php");

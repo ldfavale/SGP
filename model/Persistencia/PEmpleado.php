@@ -40,14 +40,15 @@ class PEmpleado extends Conectar {
         $estado = mysqli_real_escape_string($this->conexion(), $empleado->getestado()); //Booleano
         $privilegio=mysqli_real_escape_string($this->conexion(), $empleado->getPrivilegio());
 
-        $sql = "INSERT INTO `empleados`(`Nick`,`Pass`,`NroFuncionario`,`Nombre`, `Apellido`, `Cedula`, `Direccion`, `Residencia`, `Tel`, `Cel`, `Correo`, `CorreoInstitucional`, `FkHorario`, `FkCargo`, `FkPrivilegio`, `Estado`) VALUES "
+        $sql = "INSERT INTO `empleados`(`Nick`,`Pass`,`NroFuncionario`,`Nombre`, `Apellido`, `Cedula`, `Direccion`, `Residencia`, `Tel`, `Cel`, `Correo`, `CorreoInstitucional`, `idHorario`, `FkCargo`, `FkPrivilegio`, `Estado`) VALUES "
                 . "('" . $nick . "','". $pass . "','". $nrofuncionario . "','" . $Nombre . "','" .
                 $apellido . "','" . $cedula . "','" . $direccion . "','" . $residencia . "','" .
                 $tel . "','" . $cel . "','" . $correo . "', '" . $correoinstitucional . "', '" .
                 $horario . "','" . $cargo . "','". $privilegio . "','" . $estado ."')";
 
         if (!$this->conexion()->query($sql)){
-            return $this->conexion()->error;
+          echo $sql;
+            return $this->conexion()->error; // no esta devolviendo error
         }
 
             return 1;
@@ -71,10 +72,11 @@ class PEmpleado extends Conectar {
         $estado = mysqli_real_escape_string($this->conexion(), $empleado->getestado()); //Booleano
         $privilegio=mysqli_real_escape_string($this->conexion(), $empleado->getprivilegio()); //Booleano
 
-        $sql = "UPDATE `empleados` SET `FkPrivilegio`= '" . $privilegio . "',`NroFuncionario`= '" . $nrofuncionario . "', `Nombre`= '" . $Nombre . "', `Apellido`= '" . $apellido . "', `Cedula`= '" . $cedula . "', `Direccion`= '" . $direccion . "', `Residencia`= '" . $residencia . "', `Tel`= '" . $tel . "', `Cel`= '" . $cel . "', `Correo`= '" . $correo . "', `CorreoInstitucional`= '" . $correoinstitucional . "', `FkHorario`= '" . $horario . "', `FkCargo`= '" . $cargo . "', `Estado`= '" . $estado . "' WHERE `idEmpleado`= '" . $id . "'";
+        $sql = "UPDATE `empleados` SET `FkPrivilegio`= '" . $privilegio . "',`NroFuncionario`= '" . $nrofuncionario . "', `Nombre`= '" . $Nombre . "', `Apellido`= '" . $apellido . "', `Cedula`= '" . $cedula . "', `Direccion`= '" . $direccion . "', `Residencia`= '" . $residencia . "', `Tel`= '" . $tel . "', `Cel`= '" . $cel . "', `Correo`= '" . $correo . "', `CorreoInstitucional`= '" . $correoinstitucional . "', `idHorario`= '" . $horario . "', `FkCargo`= '" . $cargo . "', `Estado`= '" . $estado . "' WHERE `idEmpleado`= '" . $id . "'";
 
         if (!$this->conexion()->query($sql)){
-            return $this->conexion()->error;
+          echo $sql;
+            return $sql." - ".$this->conexion()->error;
         }
 
             return 1;
@@ -146,7 +148,7 @@ class PEmpleado extends Conectar {
                             $valores["Cel"]                 = $busqueda['busqueda'];
                             $valores["Correo"]              = $busqueda['busqueda'];
                             $valores["CorreoInstitucional"] = $busqueda['busqueda'];
-                            $valores["FkHorario"]           = $busqueda['busqueda'];
+                            $valores["idHorario"]           = $busqueda['busqueda'];
                             $valores["FkCargo"]             = $busqueda['busqueda'];
                             $valores["Estado"]              = $busqueda['busqueda'];
                             $pivote="OR";
@@ -170,7 +172,12 @@ class PEmpleado extends Conectar {
          }else{
              $sql = "SELECT * FROM `empleados` ORDER BY Nombre, Apellido";
          }
-            $consulta = $this->conexion()->query($sql);
+             $consulta = $this->conexion()->query($sql);
+
+
+            if (!$consulta) {
+                throw new Exception("Database Error [{$this->conexion()->errno}] {$this->conexion()->error}");
+            }
 
             while ($filas = $consulta->fetch_assoc()) {  //Error en esta linea "Call to a member function fetch_assoc() on boolean in"
                 $empleados[] = $filas; //metemos cada fila de la tabla (que son arrays) dentro del array empleados
@@ -217,7 +224,7 @@ class PEmpleado extends Conectar {
             }
             $fila = $resultado->fetch_assoc();
 
-            $empleado= new Empleado($fila['idEmpleado'], $fila['Nick'], $fila['Pass'], $fila['FkPrivilegio'], $fila['NroFuncionario'], $fila['Nombre'], $fila['Apellido'], $fila['Cedula'], $fila['Direccion'], $fila['Residencia'], $fila['Tel'], $fila['Cel'], $fila['Correo'], $fila['CorreoInstitucional'], $fila['FkHorario'], $fila['FkCargo'], $fila['Estado'], $this->BuscarRelojesEmpleado($idEmpleado));
+            $empleado= new Empleado($fila['idEmpleado'], $fila['Nick'], $fila['Pass'], $fila['FkPrivilegio'], $fila['NroFuncionario'], $fila['Nombre'], $fila['Apellido'], $fila['Cedula'], $fila['Direccion'], $fila['Residencia'], $fila['Tel'], $fila['Cel'], $fila['Correo'], $fila['CorreoInstitucional'], $fila['idHorario'], $fila['FkCargo'], $fila['Estado'], $this->BuscarRelojesEmpleado($idEmpleado));
 
             return $empleado;//devolvemos el array que trataremos en el controlador
         }

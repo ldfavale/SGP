@@ -1,8 +1,8 @@
 <?php
 
 
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Logica/logica.php");
-require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PEmpleado.php");
+require_once (APP_DIR."/model/Logica/logica.php");
+require_once (APP_DIR."/model/Persistencia/PEmpleado.php");
 // require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PPrivilegio.php");
 // require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/PReloj.php");
 // require_once ($_SERVER["DOCUMENT_ROOT"]."/model/Persistencia/Reloj/FuncReloj.php");
@@ -30,7 +30,7 @@ if(!empty($_POST['email'])){
     $user = $data['Nombre'];
     $keypass = md5(time());
     //$new_pass = strtoupper(substr(sha1(time()),0,8));
-    $link = APP_URL . 'resetearPass.php?&key='.$keypass;
+    $link = APP_URL.'resetearPass.php?&key='.$keypass;
 
   /*******************************Contraseña aleatoria******************************/
       $str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
@@ -45,7 +45,7 @@ if(!empty($_POST['email'])){
     $hoy = date('d/m/Y');
     $body = 'Estimado/a '.$user.', El dia '.$hoy.' se solicito un reseteo de contraseña, Si Ud. no solicito dicha accion, haga caso omiso de este mensaje, de lo contrario haga  <a href="'.$link.'">click aqui<a/> para resetear su contraseña.';
 
-    $mail = new Mailsmtp($email, $arg_pass, $user);
+    $mail = new Mailsmtp($email, $arg_pass, $user);// Mejorar: Generalizar Mail smtp
     if($mail->sendMailLostPass($body)){
 
       $db->query("UPDATE empleados SET keypass='$keypass',newpass='$new_pass' WHERE idEmpleado='$id';");

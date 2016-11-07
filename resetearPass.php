@@ -1,5 +1,5 @@
 <?php
-require_once($_SERVER ['DOCUMENT_ROOT']."/core.php");
+require_once("core.php");
 require('model/Persistencia/class.Conexion.php');
 
 if(!isset($_SESSION['id']) and isset($_GET['key']) ) {

@@ -31,7 +31,7 @@ if(isset($_POST['Confirmar'])) {
     $arg_cel = $_REQUEST['celular'];
     $arg_correo = $_REQUEST['email'];
     $arg_correoinstitucional= $_REQUEST['emailinstitucional'];
-    $arg_horario= 0;
+    $arg_horario= $_POST['horario'];
     $arg_cargo= 0;
     $arg_estado= 1;//Booleano
     $arg_privilegio=$_POST['privilegio'];
@@ -171,7 +171,7 @@ if(isset($_POST['Confirmar'])) {
 <div class="form-group">
   <label class="col-md-4 control-label" for="correoinstitucional">Correo Institucional</label>
   <div class="col-md-4">
-      <input id="correoinstitucional" name="emailinstitucional" placeholder="Correo Institucional" class="form-control input-md" required="" type="email" value="<?php echo $empleado->getcorreoinstitucional();?>">
+      <input id="correoinstitucional" name="emailinstitucional" placeholder="Correo Institucional" class="form-control input-md"  type="email" value="<?php echo $empleado->getcorreoinstitucional();?>">
 
   </div>
 </div>
@@ -220,6 +220,39 @@ if(isset($_POST['Confirmar'])) {
             }
 
       ?>
+    </select>
+  </div>
+</div>
+
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="selectbasic">Horario:</label>
+  <div class="col-md-4">
+    <select id="" name="horario" class="form-control">
+
+      <option value="1"> Fijo</option>
+      <option value="2"> Global</option>
+      <option value="3"> Flexible</option>
+      <option value="4"> Nocturno</option>
+            <!-- // $controlador2 = ControladorE::getInstance();
+            // $privilegios= $controlador2->ListarPrivilegios();
+            //
+            // foreach ($privilegios as $privilegio){
+            //
+            //     if($empleado->getPrivilegio()==$privilegio->getid()){
+            //         echo '<option selected value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
+            //     }
+            //     else{
+            //         if($_SESSION['tipo']== 1){
+            //             echo '<option value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
+            //         }
+            //         else{
+            //             //echo '<option disabled value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
+            //         }
+            //     }
+            // } -->
+
+
     </select>
   </div>
 </div>

@@ -90,7 +90,7 @@ class ControladorE{
         }
 
 
-        $log = new Log("Nuevo_empleado",$_SERVER["DOCUMENT_ROOT"]."/logs/");
+        $log = new Log("Nuevo_empleado",APP_DIR."/logs/");
         $log->insert($empleado->toString(), false, false, false);
 
 
@@ -101,7 +101,15 @@ class ControladorE{
 //
 //        return "error";
 
-        $mail=new Mailsmtp($arg_correoinstitucional, $arg_pass, $arg_nombre);
+        if($arg_correoinstitucional != "" ){
+
+              $correo = $arg_correoinstitucional;
+        }else{
+
+              $correo = $arg_correo;
+        }
+
+        $mail=new Mailsmtp($correo, $arg_pass, $arg_nombre);
         $resultadomail=$mail->sendmail();
         if($resultadomail!=1){
             return "Error: ".$resultadomail;

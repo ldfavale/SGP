@@ -1,10 +1,10 @@
 <?php
 
 class Empleado{
-    
+
     private $id;
     private $NombreUsuario;
-    private $Contraseña; 
+    private $Contraseña;
     private $privilegio; //FK al privilegio
     private $nrofuncionario; //Corresponde al numero real del funcionario
     private $nombre;
@@ -20,16 +20,16 @@ class Empleado{
     private $cargo; //FK al cargo
     private $estado;//Booleano 0 inactivo 1 activo
     private $relojes; // Coleccion de los relojes en los que esta registrado el funcionario
-    
+
     function __construct($arg_id, $arg_Nick , $arg_contraseña, $arg_privilegio, $arg_nrofuncionario, $arg_nombre, $arg_apellido, $arg_cedula, $arg_direccion, $arg_residencia, $arg_tel, $arg_cel, $arg_correo, $arg_correoinstitucional, $arg_idhorario, $arg_cargo, $arg_estado, $arg_relojes= "") //funcion que se autoejecuta cuando defines un objeto, le puedes poner argumentos de inicialización, por defecto todo es vacio
 	    {
                 $this->id=$arg_id;
-        	$this->NombreUsuario=$arg_Nick; 
-	        $this->Contraseña=$arg_contraseña;
+        	      $this->NombreUsuario=$arg_Nick; 
+	              $this->Contraseña=$arg_contraseña;
                 $this->privilegio=$arg_privilegio;
                 $this->nrofuncionario=$arg_nrofuncionario;
-	        $this->nombre=$arg_nombre; 
-	        $this->apellido=$arg_apellido;
+	              $this->nombre=$arg_nombre;
+	              $this->apellido=$arg_apellido;
                 $this->cedula=$arg_cedula;
                 $this->direccion=$arg_direccion;
                 $this->residencia=$arg_residencia;
@@ -53,7 +53,7 @@ class Empleado{
 	}
 	function getnrofuncionario(){
 		return $this->nrofuncionario;
-	}            
+	}
 	function getnombre(){
 		return $this->nombre;
 	}
@@ -104,7 +104,7 @@ class Empleado{
 	}
         function setPrivilegio($arg_privilegio){
 		$this->privilegio=$arg_privilegio;
-	}        
+	}
         function setnrofuncionario($nro){
 		$this->nrofuncionario=$nro;
 	}
@@ -143,14 +143,14 @@ class Empleado{
 	}
 	function setestado($estado){
 		$this->estado=$estado;
-	}    
+	}
         function setid($id){
 		$this->id=$id;
-	} 
+	}
         function setrelojes($relojes){
 		$this->relojes=$relojes;
 	}
-        
+
         function  toString(){
             $string="Nombre de usuario: ".  $this->NombreUsuario.
                     " - Contrase;a: ".      $this->Contraseña.

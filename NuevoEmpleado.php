@@ -7,7 +7,7 @@
 
 <?php
 
-require_once($_SERVER ['DOCUMENT_ROOT']."/controller/Controller.php");
+require_once(APP_DIR."/controller/Controller.php");
 
 $busqueda = null;
 
@@ -15,7 +15,7 @@ $busqueda = null;
 
 if(isset($_POST['Confirmar'])) {
     $controlador = ControladorE::getInstance();
-    
+
     $arg_nick= $_POST['nick'];
     $arg_nrofuncionario= $_REQUEST['nrofuncionario'];
     $arg_nombre = $_REQUEST['nombre'];
@@ -27,7 +27,7 @@ if(isset($_POST['Confirmar'])) {
     $arg_cel = $_REQUEST['celular'];
     $arg_correo = $_REQUEST['email'];
     $arg_correoinstitucional= $_REQUEST['emailinstitucional'];
-    $arg_horario= 0;
+    $arg_horario= $_POST['horario'];
     $arg_cargo= 0;
     $arg_estado= 1;//Booleano
     if(isset($_POST['checkboxes'])){
@@ -36,8 +36,8 @@ if(isset($_POST['Confirmar'])) {
          $arg_arrayrelojes=null;
     }
     $arg_privilegio=$_POST['privilegio'];
-    
-    
+
+
     $result=$controlador->AltaEmpleado($arg_nick,$arg_privilegio, $arg_nrofuncionario, $arg_nombre, $arg_apellido, $arg_cedula, $arg_direccion, $arg_residencia, $arg_tel, $arg_cel, $arg_correo, $arg_correoinstitucional, $arg_horario, $arg_cargo, $arg_estado, $arg_arrayrelojes);
 
     if($result==1){
@@ -45,9 +45,9 @@ if(isset($_POST['Confirmar'])) {
                     <div class="alert alert-info">
                         <button type="button" class="close" data-dismiss="alert">×</button>
                         <b>Excelente</b> se a agregado el nuevo funcionario.
-                    </div> 
-   
-<?php 
+                    </div>
+
+<?php
 
     }else{
         echo '<div class="alert alert-info alert-dismissible" role="alert">'.
@@ -55,7 +55,7 @@ if(isset($_POST['Confirmar'])) {
                      'ERROR: '.$result.'</div>';
 
     }
-      
+
 }
 ?>
 
@@ -70,16 +70,16 @@ if(isset($_POST['Confirmar'])) {
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="Nick">Nombre de Usuario:</label>  
+  <label class="col-md-4 control-label" for="Nick">Nombre de Usuario:</label>
   <div class="col-md-4">
   <input id="nick" name="nick" placeholder="UserName" class="form-control input-md" required="" type="text">
-    
+
   </div>
 </div>
 
 <!-- Text input NUMERO DE FUNCIONARIO-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="nrofuncionario">N°</label>  
+  <label class="col-md-4 control-label" for="nrofuncionario">N°</label>
   <div class="col-md-4">
       <input id="nrofuncionario" name="nrofuncionario" placeholder="Numero de funcionario" class="form-control input-md" required="" type="text" onkeyup="ValidarNumero(this.value); " onchange="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')">
   </div>
@@ -87,25 +87,25 @@ if(isset($_POST['Confirmar'])) {
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="Nombre">Nombre</label>  
+  <label class="col-md-4 control-label" for="Nombre">Nombre</label>
   <div class="col-md-4">
   <input id="Nombre" name="nombre" placeholder="Nombre" class="form-control input-md" required="" type="text">
-    
+
   </div>
 </div>
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="apellido">Apellido</label>  
+  <label class="col-md-4 control-label" for="apellido">Apellido</label>
   <div class="col-md-4">
   <input id="apellido" name="apellido" placeholder="Apellido" class="form-control input-md" type="text">
-    
+
   </div>
 </div>
 
 <!-- Text input NUMERO DE CEDULA-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="cedula">Cedula</label>  
+  <label class="col-md-4 control-label" for="cedula">Cedula</label>
   <div class="col-md-4">
       <input id="cedula" name="cedula" placeholder="12345678" maxlength="8" class="form-control input-md" required="" type="text" onkeyup="ValidarNumero(this.value); " onchange="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')">
   </div>
@@ -113,79 +113,111 @@ if(isset($_POST['Confirmar'])) {
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="residencia">Lugar de residencia</label>  
+  <label class="col-md-4 control-label" for="residencia">Lugar de residencia</label>
   <div class="col-md-4">
   <input id="residencia" name="residencia" placeholder="ej: Maldonado" class="form-control input-md" type="text">
-    
+
   </div>
 </div>
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="direccion">Direccion</label>  
+  <label class="col-md-4 control-label" for="direccion">Direccion</label>
   <div class="col-md-4">
   <input id="direccion" name="direccion" placeholder="Roman Guerra 1999" class="form-control input-md" type="text">
-    
+
   </div>
 </div>
 
 <!-- Text input NUMERO DE TELEFONO-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="telefono">Telefono</label>  
+  <label class="col-md-4 control-label" for="telefono">Telefono</label>
   <div class="col-md-4">
       <input id="telefono" name="telefono" placeholder="Tel" class="form-control input-md" type="tel" required="" onkeyup="ValidarNumero(this.value); " onchange="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')">
-    
+
   </div>
 </div>
 
 <!-- Text input NUMERO DE CELULAR-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="celular">Celular</label>  
+  <label class="col-md-4 control-label" for="celular">Celular</label>
   <div class="col-md-4">
       <input id="celular" name="celular" placeholder="Cel" maxlength="9" class="form-control input-md" required="" type="tel" onkeyup="ValidarNumero(this.value); " onchange="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')">
-    
+
   </div>
 </div>
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="correo">Correo</label>  
+  <label class="col-md-4 control-label" for="correo">Correo</label>
   <div class="col-md-4">
   <input id="correo" name="email" placeholder="Correo" class="form-control input-md" type="email">
-    
+
   </div>
 </div>
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="correoinstitucional">Correo Institucional</label>  
+  <label class="col-md-4 control-label" for="correoinstitucional">Correo Institucional</label>
   <div class="col-md-4">
   <input id="correoinstitucional" name="emailinstitucional" placeholder="Correo Institucional" class="form-control input-md" required="" type="email">
-    
+
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="selectbasic">Horario:</label>
+  <div class="col-md-4">
+    <select id="" name="horario" class="form-control">
+
+      <option value="1"> Fijo</option>
+      <option value="2"> Global</option>
+      <option value="3"> Flexible</option>
+      <option value="4"> Nocturno</option>
+            <!-- // $controlador2 = ControladorE::getInstance();
+            // $privilegios= $controlador2->ListarPrivilegios();
+            //
+            // foreach ($privilegios as $privilegio){
+            //
+            //     if($empleado->getPrivilegio()==$privilegio->getid()){
+            //         echo '<option selected value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
+            //     }
+            //     else{
+            //         if($_SESSION['tipo']== 1){
+            //             echo '<option value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
+            //         }
+            //         else{
+            //             //echo '<option disabled value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
+            //         }
+            //     }
+            // } -->
+
+
+    </select>
   </div>
 </div>
 
 <!-- Text input
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">Horario</label>  
+  <label class="col-md-4 control-label" for="textinput">Horario</label>
   <div class="col-md-4">
-  <input id="textinput" name="textinput" placeholder="Horario" class="form-control input-md" type="text"> 
+  <input id="textinput" name="textinput" placeholder="Horario" class="form-control input-md" type="text">
   </div>
 </div>
 
  Text input
 <div class="form-group">
-  <label class="col-md-4 control-label" for="cargo">Cargo</label>  
+  <label class="col-md-4 control-label" for="cargo">Cargo</label>
   <div class="col-md-4">
   <input id="cargo" name="cargo" placeholder="Cargo" class="form-control input-md" type="text">
-    
+
   </div>
 </div>-->
 
  <?php
         $controlador2 = ControladorE::getInstance();
         $privilegios= $controlador2->ListarPrivilegios();
- ?>  
+ ?>
 <!-- Select Basic -->
 <div class="form-group">
   <label class="col-md-4 control-label" for="selectbasic">Seleccione Privilegio:</label>
@@ -193,34 +225,34 @@ if(isset($_POST['Confirmar'])) {
     <select id="selectbasic" name="privilegio" class="form-control">
       <?php
 
-        foreach ($privilegios as $privilegio){ 
+        foreach ($privilegios as $privilegio){
 
-            
+
             if($_SESSION['tipo']== 1){
-                
+
                 if($privilegio->getnombre()!="Funcionario"){
-                    echo '<option value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';  
+                    echo '<option value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
                 }
                 else{
                     echo '<option selected value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
                 }
-                
+
             }
             else{
-                
+
                 if($privilegio->getnombre()!="Funcionario"){
-                   if($privilegio->getnombre()!="Administrador"){ echo '<option value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';} 
+                   if($privilegio->getnombre()!="Administrador"){ echo '<option value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';}
                 }
                 else{
                     echo '<option selected value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
                 }
-                
+
             }
-            
+
         }
-      
-      ?>    
-    
+
+      ?>
+
     </select>
   </div>
 </div>
@@ -229,30 +261,30 @@ if(isset($_POST['Confirmar'])) {
 <div class="form-group">
   <label class="col-md-4 control-label" for="checkboxes">Seleccione los sensores</label>
   <div class="col-md-4">
-    
+
       <?php $controladorsede  =ControladorS::getInstance();
       $controladorreloj= ControladorR::getInstance();
 
             $result= $controladorreloj->ListarRelojes();
             $count=0;
-        
+
             if(isset($result)){
-                
+
                 foreach ($result as $row){
 
                     echo '<label class="checkbox-inline" for="checkboxes-'.$count.'">';
                     echo '<input name="checkboxes[]" id="checkboxes-'.$count.'" value="'.$row["ID"].'" type="checkbox">';
-                    
+
                     $sede=$controladorsede->BuscarSede($row["idSede"]);
                     echo $sede[0]["Nombre"];
                     unset($sede);
                     echo '</label>';
                     $count++;
                 }
-                
+
             }
       ?>
-      
+
   </div>
 </div>
 <!-- Button -->

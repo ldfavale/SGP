@@ -1,6 +1,6 @@
 <?php
 
-require_once($_SERVER ['DOCUMENT_ROOT']."/controller/Controller.php");
+require_once(APP_DIR."/controller/Controller.php");
 
 $controlador = ControladorE::getInstance();
 $controladorMarcas=  ControladorM::getInstance();
