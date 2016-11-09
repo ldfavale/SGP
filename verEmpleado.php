@@ -170,9 +170,13 @@ if (isset($resultado)) {
                         </ol>
                     </div>
                 </div>
+<?php if($empleado->gethorario() == 4){
 
+?> <form class="form form-inline" action="PHPExcel/crearExcelNocturno.php" method="post"> <?php
+}else{
+?>
                 <form class="form form-inline" action="PHPExcel/crearExcel.php" method="post">
-
+<?php }?>
                   <input name="id" type="hidden" value="<?php echo $empleado->getid()?>">
                   <input name="nombre" type="hidden" value="<?php echo $empleado->getnombre()?>">
                   <input name="apellido" type="hidden" value="<?php echo $empleado->getapellido()?>">
