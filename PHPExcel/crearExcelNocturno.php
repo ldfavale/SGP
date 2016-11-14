@@ -224,7 +224,7 @@ $sql = $mysqli->query("SELECT * FROM attendance_record WHERE user_code = $user_c
 
 $numero=3;
 $user = $_POST['id'];
-$intervalo = 5/60;
+$intervalo = 5/60; // minutos/60
 $mes = $_POST['mes'];
 $año = $_POST['anio'];
 $array = array();
@@ -239,10 +239,23 @@ $strAnio = strtoupper(strftime("%Y",strtotime($strfecha)));
 
 $objSheet->setCellValue('F1', $strMes.' '.$strAnio);
 
+//$sentencia =  $mysqli->stmt_init();
 /****************************** Recorro desde 1 hasta ultimo dia *****************************************************************/
 for($cont = 1; $cont <= $ultimo_dia; $cont++){
-    //echo 'hola';
-        $sql = $mysqli->query("SELECT * FROM attendance_record WHERE user_code = $user  AND DAY(datetime) = '$cont'  AND MONTH(datetime) = '$mes' AND YEAR(datetime) = '$año' ORDER BY datetime");
+    // usar class conexion  //datetime es un campo de la tabla attendance_record
+
+				if($cont == $ultimo_dia){
+
+					$month = intval($mes)+1;
+					$sql = $mysqli->query("SELECT * FROM attendance_record WHERE user_code = $user AND DAY(datetime) = '$cont'  AND MONTH(datetime) = '$month' AND YEAR(datetime) = '$año' ORDER BY datetime");
+
+				}else{// si no es el ultimo_dia
+					$nextday = $cont+1;
+					$sql = $mysqli->query("SELECT * FROM attendance_record WHERE user_code = $user AND DAY(datetime) = '$cont'  AND MONTH(datetime) = '$mes' AND YEAR(datetime) = '$año' AND type_code = '0' ORDER BY datetime");
+					$sql2 = $mysqli->query("SELECT * FROM attendance_record WHERE user_code = $user AND DAY(datetime) = '$nextday'  AND MONTH(datetime) = '$mes' AND YEAR(datetime) = '$año' AND type_code = '1' ORDER BY datetime");
+
+				}
+
 /************************ Array con valores fijos de las columnas A B C ******************************************/
         $fijo[$cont] = array(0 => $cont, 1 => ''.$cont.'/'.$mes.'/'.$año,  2 => ' ');
 
@@ -254,10 +267,10 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
         }
 
         $cont2 = 0; //Inicializo contador
-				$flag = false;
+				$flag = false;//Eliminar
 				$objSheet->setCellValue('H'.($ultimo_dia+$firstrow),'0');
 /******************* Recorro resultado de consulta sql ****************************************************/
-        while($dato = $sql->fetch_assoc()){
+        while($dato = $sql->fetch_assoc()){ //recorro entradas
 
 //            $marcas[$cont2] = explode(' ',$dato['datetime'])[0];
             $array[$cont] = $zerorow; //Inizializo
@@ -265,43 +278,34 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
             $date = new datetime($dato['datetime']);
 
-            if($cont2 == 0){ // Si es la primera vez
 
-						/*
-								La mejor solucion que encontre hasta ahora es preguntar por el tipo de marca e irlos metiendo en el
-								array marcas en el orden correspondiente (1er entrada en [0], 2da en [2], 1er salida en [1], 2da salida en [3]),
-								y cuando ya esten seteadas los 4 lugares del array,tirar el resto para inconsistencias mostrando
-								su respectivo tipo de marca.
-								NOTA: hay mas tipos de inconsistencia; si marco dos entradas solamente tambien es inconsistencia, lo mismo
-								si marco dos salidas. Y tambien si la salida en menor a la entrada.
 
-								FALTA: marcar inconsitencia si las salidas son anteriores a las entradas o las entradas posteriores a las salidas,
-								tener en cuenta todos los casos posibles.
 
-						*/
 
-								if($dato['type_code'] == 0){ // Si es una entrada
+	/********************** Marco entrada **********************************/
 
 										$lastdate = $date; //guardo date como la ultima fecha registrada
 		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code']; // Guardo la marca en el arreglo posicio 0
 		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code'].' '.$cont2; // Guardo la marca en el arreglo posicio 0
-		                $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo posicio 0
+		                $marcas['e'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo posicio 0
 		               // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
 		                $fijo[$cont][2] = "Solo marco entrada!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
 
-								}else{
+
 
 										$lastdate = $date; //guardo date como la ultima fecha registrada
-									$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo
+										$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo
+
 										//$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' b '.$dato['type_code'] .' '.$cont2; // Guardo la marca en el arreglo
 									 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+
 										$fijo[$cont][2] = "Solo marco salida!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
 
+	/**********************  FIN Marco entrada **********************************/
 
-								}
 
-                $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
-            }else{// Si no es la primera vez
+                $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
+
 
 //                if($cont2 == 5){
 //
@@ -309,6 +313,7 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 //                $cont2++;
 //                }
 
+/****************************Script  de filtro de marcas menores a un intervalo dado ***************************************************************/
                 $fecha = new datetime($dato['datetime']);
                 $diff = $lastdate->diff($fecha)->format('%H:%i');
 
@@ -319,15 +324,27 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
 
 
-                if($diferencia > $intervalo){// si la diferencia con la ultima fecha registrada es mayor a intervalo se continua sino se omite la marca
-                    if(count($marcas)<4){// si aun no setee las dos entradas y dos salidas, de lo contrario las siguientes marcas seran inconsistencias
+                if($diferencia > $intervalo){// si la diferencia con la ultima fecha registrada es mayor al intervalo minimo se continua sino se omite la marca
+
+													//$type = $dato['type_code'] == 0 ? 'E' : 'S';
+													$inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
+													//$lastdate = $fecha;
+													$lastdate = $date;
+													$fijo[$cont][2] = " Marcas de mas!";// esto hay que sacarlo del while y preguntar si $fijo[$cont][2] esta seteado != ''
+													$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);//// esto hay que sacarlo del while
+
+
+
+
+
+									/*  if(count($marcas)<2){// si aun no setee las dos entrada y salida, de lo contrario las siguientes marcas seran inconsistencias
 
 											if($dato['type_code'] == 0){ // Si es una entrada
 
 													//$lastdate = $date; //guardo date como la ultima fecha registrada
 													if(isset($marcas['e1'])){// si esta seteada la primer entrada
 
-																if(!isset($marcas['e2'])){// y no esta seteada la seguna entrada
+																/*if(!isset($marcas['e2'])){// y no esta seteada la seguna entrada
 																		$marcas['e2'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en pos 2
 																		//$marcas['e2'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' c '.$dato['type_code'].' '.$cont2.' diff='.$diferencia; // Guardo la marca en pos 2
 																		$lastdate = $date; //guardo date como la ultima fecha registrada
@@ -338,32 +355,32 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 																		$fijo[$cont][2] = "Demasiadas entradas!";
 																		$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
 
-																	}
+																/*	}
 
 												 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
 													//$fijo[0][2] = "Inconsistencia!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
 												}else{// Si no esta seteada la primera entrada la seteo
 													//$marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' d '.$dato['type_code'].' '.$cont2.' diff='.$diferencia; // Guardo la entrada e1
 													$marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo pos 0
-															$lastdate = $date; //guardo date como la ultima fecha registrada
+													$lastdate = $date; //guardo date como la ultima fecha registrada
 												}
 											}else{// si no es entrada
 
 												//	if($dato['type_code'] == 'OO'){ // Si es una salida
 																if(isset($marcas['s1'])){// si esta seteada la primer salida
 
-																			if(!isset($marcas['s2'])){// y no esta seteada la seguna salida
+																		/*	if(!isset($marcas['s2'])){// y no esta seteada la seguna salida
 																					$marcas['s2'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en pos 3
 																				//	$marcas['s2'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' e '.$dato['type_code'].' '.$cont2.' diff='.$diferencia; // Guardo la marca en pos 3
 																							$lastdate = $date; //guardo date como la ultima fecha registrada
 																						}else{
 																							$inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
 											                        //$lastdate = $fecha;
-											                     $lastdate = $date;
+											                     		$lastdate = $date;
 											                        $fijo[$cont][2] = " Demasiadas salidas!";
 											                        $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
 
-																						}
+																					/*	}
 															 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
 																//$fijo[0][2] = "Inconsistencia!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
 															}else{// Si no esta seteada la primera salida
@@ -378,26 +395,26 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
                     //$marcas[$cont2] = explode(' ',$dato['datetime'])[1];
                     //$lastdate = $fecha;
 
-                        if(count($marcas) == 1 or count($marcas) == 3){
-                            $fijo[$cont][2] = " Marcas insuficientes!";
+                        if(count($marcas) == 1 ){ /*or count($marcas) == 3
+
+														$fijo[$cont][2] = " Marcas insuficientes!";
                             $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
 
                         }else{
 														if(count($marcas) == 2){// si hay 2 marcas seteadas
 
-															if((isset($marcas['e1']) and isset($marcas['e2'])) or (isset($marcas['s1']) and isset($marcas['s2']))){
+														/*	if((isset($marcas['e1']) and isset($marcas['e2'])) or (isset($marcas['s1']) and isset($marcas['s2']))){
 																$fijo[$cont][2] = $fijo[$cont][2]." Dos marcas del mismo tipo!";
 		                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
 
-															}else{/* me despinta con inconsistencia aun falta controlar cuando count($marcas) == 4 que sucede y controlar el resto de las inconsistencias*/
-
+															}else{
 																if(isset($marcas['e1']) and isset($marcas['s1'])){
 
 																	$e1 = new DateTime(explode(' ', $marcas['e1'])[0]);
 																	$s1 = new DateTime(explode(' ', $marcas['s1'])[0]);
-																		if($e1 > $s1){
+																	/*	if($e1 > $s1){
 
-																			$fijo[$cont][2] = " Salida anterior a entrada!";
+																$fijo[$cont][2] = " Salida anterior a entrada!";
 					                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
 
 
@@ -406,20 +423,21 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 																			$fijo[$cont][2] = " ";
 					                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($despintar);
 
-																		}
+																	/*	}
 
 																}
 
-															}
+														/*	}
 														}else{// si NO hay 1 o 3 ,ni tampoco 2 marcas seteadas, es decir, si hay 4 -> despinto (a priori)
 
 
-															$fijo[$cont][2] = " ";
-	                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($despintar);
+															$fijo[$cont][2] = " No hay 2 marcas ni tampoco 1, something rare is happening!";
+	                          //  $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($despintar);
+	                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
 
 														}
 
-														/***********************Pinto los fines de semana***********************************************/
+														/*********************** Pinto los fines de semana ***********************************************
 
 														if(date('N', strtotime($año.'-'.$mes.'-'.$cont)) >= 6){
 
@@ -427,7 +445,7 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
                             }
 
                         }
-                    }else{// si ya setee las 4 marcas tiro las marcas al array inconsistencias
+                    }else{// si ya setee las 2 marcas tiro las marcas al array inconsistencias
 
 
 											  $inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
@@ -438,9 +456,207 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
 
 
-                    }
+                    }*/
                 }
-            }
+
+						// if($marcas[0] == ' ' and $marcas[1] == ' ' and $marcas[2] == ' ' and $marcas[3] == ' '  ){
+						// 	unset($marcas);
+						// }
+
+            $cont2++;
+        }
+
+//************** RECORRO SALIDAS ***************************************/
+
+				while($dato = $sql2->fetch_assoc()){
+
+//            $marcas[$cont2] = explode(' ',$dato['datetime'])[0];
+            $array[$cont] = $zerorow; //Inizializo
+
+
+            $date = new datetime($dato['datetime']);
+
+
+
+
+
+	/********************** Marco entrada **********************************/
+
+										$lastdate = $date; //guardo date como la ultima fecha registrada
+		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code']; // Guardo la marca en el arreglo posicio 0
+		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code'].' '.$cont2; // Guardo la marca en el arreglo posicio 0
+		                $marcas['e'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo posicio 0
+		               // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+		                $fijo[$cont][2] = "Solo marco entrada!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
+
+
+
+										$lastdate = $date; //guardo date como la ultima fecha registrada
+										$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo
+
+										//$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' b '.$dato['type_code'] .' '.$cont2; // Guardo la marca en el arreglo
+									 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+
+										$fijo[$cont][2] = "Solo marco salida!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
+
+	/**********************  FIN Marco entrada **********************************/
+
+
+                $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
+
+
+//                if($cont2 == 5){
+//
+//                $marcas[$cont2] = 'hola';
+//                $cont2++;
+//                }
+
+/****************************Script  de filtro de marcas menores a un intervalo dado ***************************************************************/
+                $fecha = new datetime($dato['datetime']);
+                $diff = $lastdate->diff($fecha)->format('%H:%i');
+
+								$diferencia = Decimal($diff);
+                //echo $diff;
+								//$objSheet->setCellValue('I'.$cont, 'dif = '.$diff);
+
+
+
+
+                if($diferencia > $intervalo){// si la diferencia con la ultima fecha registrada es mayor al intervalo minimo se continua sino se omite la marca
+
+													//$type = $dato['type_code'] == 0 ? 'E' : 'S';
+													$inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
+													//$lastdate = $fecha;
+													$lastdate = $date;
+													$fijo[$cont][2] = " Marcas de mas!";// esto hay que sacarlo del while y preguntar si $fijo[$cont][2] esta seteado != ''
+													$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);//// esto hay que sacarlo del while
+
+
+
+
+
+									/*  if(count($marcas)<2){// si aun no setee las dos entrada y salida, de lo contrario las siguientes marcas seran inconsistencias
+
+											if($dato['type_code'] == 0){ // Si es una entrada
+
+													//$lastdate = $date; //guardo date como la ultima fecha registrada
+													if(isset($marcas['e1'])){// si esta seteada la primer entrada
+
+																/*if(!isset($marcas['e2'])){// y no esta seteada la seguna entrada
+																		$marcas['e2'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en pos 2
+																		//$marcas['e2'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' c '.$dato['type_code'].' '.$cont2.' diff='.$diferencia; // Guardo la marca en pos 2
+																		$lastdate = $date; //guardo date como la ultima fecha registrada
+																	}else{
+																		$inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
+																		//$lastdate = $fecha;
+																 		$lastdate = $date;
+																		$fijo[$cont][2] = "Demasiadas entradas!";
+																		$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
+
+																/*	}
+
+												 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+													//$fijo[0][2] = "Inconsistencia!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
+												}else{// Si no esta seteada la primera entrada la seteo
+													//$marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' d '.$dato['type_code'].' '.$cont2.' diff='.$diferencia; // Guardo la entrada e1
+													$marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo pos 0
+													$lastdate = $date; //guardo date como la ultima fecha registrada
+												}
+											}else{// si no es entrada
+
+												//	if($dato['type_code'] == 'OO'){ // Si es una salida
+																if(isset($marcas['s1'])){// si esta seteada la primer salida
+
+																		/*	if(!isset($marcas['s2'])){// y no esta seteada la seguna salida
+																					$marcas['s2'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en pos 3
+																				//	$marcas['s2'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' e '.$dato['type_code'].' '.$cont2.' diff='.$diferencia; // Guardo la marca en pos 3
+																							$lastdate = $date; //guardo date como la ultima fecha registrada
+																						}else{
+																							$inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
+											                        //$lastdate = $fecha;
+											                     		$lastdate = $date;
+											                        $fijo[$cont][2] = " Demasiadas salidas!";
+											                        $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
+
+																					/*	}
+															 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+																//$fijo[0][2] = "Inconsistencia!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
+															}else{// Si no esta seteada la primera salida
+																$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo pos 0
+															//	$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' f '.$dato['type_code']; // Guardo la marca en el arreglo pos 0
+															//	$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' f '.$dato['type_code'].' '.$cont2.' diff='.$diferencia; // Guardo la marca en el arreglo pos 0
+																$lastdate = $date; //guardo date como la ultima fecha registrada
+															}
+											//	}
+											}
+										//$marcas[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Registro solo la hora y sin los segundos
+                    //$marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+                    //$lastdate = $fecha;
+
+                        if(count($marcas) == 1 ){ /*or count($marcas) == 3
+
+														$fijo[$cont][2] = " Marcas insuficientes!";
+                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
+
+                        }else{
+														if(count($marcas) == 2){// si hay 2 marcas seteadas
+
+														/*	if((isset($marcas['e1']) and isset($marcas['e2'])) or (isset($marcas['s1']) and isset($marcas['s2']))){
+																$fijo[$cont][2] = $fijo[$cont][2]." Dos marcas del mismo tipo!";
+		                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
+
+															}else{
+																if(isset($marcas['e1']) and isset($marcas['s1'])){
+
+																	$e1 = new DateTime(explode(' ', $marcas['e1'])[0]);
+																	$s1 = new DateTime(explode(' ', $marcas['s1'])[0]);
+																	/*	if($e1 > $s1){
+
+																$fijo[$cont][2] = " Salida anterior a entrada!";
+					                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
+
+
+																		}else{
+
+																			$fijo[$cont][2] = " ";
+					                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($despintar);
+
+																	/*	}
+
+																}
+
+														/*	}
+														}else{// si NO hay 1 o 3 ,ni tampoco 2 marcas seteadas, es decir, si hay 4 -> despinto (a priori)
+
+
+															$fijo[$cont][2] = " No hay 2 marcas ni tampoco 1, something rare is happening!";
+	                          //  $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($despintar);
+	                            $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);
+
+														}
+
+														/*********************** Pinto los fines de semana ***********************************************
+
+														if(date('N', strtotime($año.'-'.$mes.'-'.$cont)) >= 6){
+
+                                    $objSheet->getStyle('B'.($cont+$firstrow-1))->applyFromArray($pintarfindesemana);
+                            }
+
+                        }
+                    }else{// si ya setee las 2 marcas tiro las marcas al array inconsistencias
+
+
+											  $inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
+                        //$lastdate = $fecha;
+                     		$lastdate = $date;
+                        $fijo[$cont][2] = " Marcas de mas!";// esto hay que sacarlo del while y preguntar si $fijo[$cont][2] esta seteado != ''
+                        $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia);//// esto hay que sacarlo del while
+
+
+
+                    }*/
+                }
+
 						// if($marcas[0] == ' ' and $marcas[1] == ' ' and $marcas[2] == ' ' and $marcas[3] == ' '  ){
 						// 	unset($marcas);
 						// }
@@ -462,7 +678,7 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
     if(isset($marcas)){
 
 
-		if(count($marcas) == 4){
+		/*if(count($marcas) == 2){
 
 
 					$e1 = new DateTime(explode(' ', $marcas['e1'])[0]);
@@ -491,9 +707,9 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
 					}
 
-}
+}*/
 			if(isset($marcas['e1'])){
-				$marc[0] = $marcas['e1'] ;
+				$marc[0] = $marcas['e1'] ;// $marc es un array auxiliar
 			}else{
 				$marc[0] = '';
 			}
@@ -504,7 +720,7 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 				$marc[1] = '';
 			}
 
-			if(isset($marcas['e2'])){
+		/*	if(isset($marcas['e2'])){
 				$marc[2] = $marcas['e2'];
 			}else{
 				$marc[2] = '';
@@ -514,21 +730,17 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 				$marc[3] = $marcas['s2'];
 			}else{
 				$marc[3] = '';
-			}
+			}*/
 
 
     $array[$cont] = $marc;
 
     unset($marcas);
-    }else{
-           // $objSheet->setCellValue('');
+	}else{// si $marcas no esta seteado
 
-       // $fijo[$cont] = array(0 => $cont, 1 => ''.$cont.'/'.$mes.'/'.$año,  2 => 'obs');
-       /* $marcas[0] = $cont;
-         $marcas[1] = ''.$cont.'/'.$mes.'/'.$año;
-         $marcas[2] = ' ';*/
-       $array[$cont] = $zerorow;
-//       $total[$cont] = array('00:00');
+
+       $array[$cont] = $zerorow;// agrego una fila vacia
+
     }
     if(isset($inconsistencias)){
         $array2[$cont] = $inconsistencias;
