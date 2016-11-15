@@ -267,6 +267,7 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
         }
 
         $cont2 = 0; //Inicializo contador
+				$cont3 = 0;
 				$flag = false;//Eliminar
 				$objSheet->setCellValue('H'.($ultimo_dia+$firstrow),'0');
 				$array[$cont] = $zerorow; //Inizializo
@@ -287,10 +288,10 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
 
 
-if(!isset($marcas['e1'])){
+if($cont3 == 0){ // si es la primera vez
 
 	/********************** Marco entrada **********************************/
-
+//if(!isset($marcas['e1'])){
 										$lastdate = $date; //guardo date como la ultima fecha registrada
 									//  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code']; // Guardo la marca en el arreglo posicio 0
 									//  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code'].' '.$cont2; // Guardo la marca en el arreglo posicio 0
@@ -303,10 +304,14 @@ if(!isset($marcas['e1'])){
 									 $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
 
 
+
+
+
+
 	/**********************  FIN Marco entrada **********************************/
 
 
-		}else{ //si ya se marco una entrada
+}else{ //si no es la primera vez
 
 
 
@@ -466,12 +471,13 @@ if(!isset($marcas['e1'])){
 						// }
 						}
             $cont2++;
+            $cont3++;
         }
 
 //****************** RECORRO SALIDAS ***************************************/
 
-//	$contOut = 0; //Inicializo contador de salidas
 
+$cont3 = 0; //Importante! cont3 vuelve a 0 pero cont2 no. Cont2 es para ambos while, mientras que cont3 para cada uno por separado
 				while($dato = $sql2->fetch_assoc()){
 
 //            $marcas[$cont2] = explode(' ',$dato['datetime'])[0];
@@ -483,7 +489,7 @@ if(!isset($marcas['e1'])){
 
 
 
-
+			if($cont3 == 0){	// es decir, si es la primera vez
 	/********************** Marco Salida **********************************/
 
 									 	$lastdate = $date; //guardo date como la ultima fecha registrada
@@ -497,14 +503,17 @@ if(!isset($marcas['e1'])){
 										$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
 
 									}else{ // si ya esta seteada  e1
+
+											if(!isset($inconsistencias)){
 												$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($despintar);
 												$fijo[$cont][2] = " ";
+											}
 									}
 
 	/**********************  FIN Marco salida **********************************/
 
 
-
+}else{
 
 //                if($cont2 == 5){
 //
@@ -659,11 +668,11 @@ if(!isset($marcas['e1'])){
                     }*/
                 }
 
-						// if($marcas[0] == ' ' and $marcas[1] == ' ' and $marcas[2] == ' ' and $marcas[3] == ' '  ){
-						// 	unset($marcas);
-						// }
+
+				 }
 
             $cont2++;
+						$cont3++;
         }
 /***************************************************************************************************************/
 /******************* FIN Recorro resultado de consulta sql  ****************************************************/
@@ -677,7 +686,8 @@ if(!isset($marcas['e1'])){
     $cont2 = 0;
 	//	$contOut = 0
 		// asigno formula a TOTAL a fila actual (fila $cont)
-		$objSheet->setCellValue('H'.($cont+$firstrow-1), '=SUM(G'.($cont+$firstrow-1).'-F'.($cont+$firstrow-1).')+(E'.($cont+$firstrow-1).'-D'.($cont+$firstrow-1).')');
+		$objSheet->setCellValue('A50','24:00');
+		$objSheet->setCellValue('H'.($cont+$firstrow-1), '=SUM(E'.($cont+$firstrow-1).'-D'.($cont+$firstrow-1).'+A50)');
 
     if(isset($marcas)){
 
