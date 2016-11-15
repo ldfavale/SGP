@@ -269,52 +269,54 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
         $cont2 = 0; //Inicializo contador
 				$flag = false;//Eliminar
 				$objSheet->setCellValue('H'.($ultimo_dia+$firstrow),'0');
-/******************* Recorro resultado de consulta sql ****************************************************/
-        while($dato = $sql->fetch_assoc()){ //recorro entradas
+				$array[$cont] = $zerorow; //Inizializo
+//***********************************************************************************************************
+/******************* Recorro resultados de consultas sql ****************************************************/
+//***********************************************************************************************************
+
+
+//************************ Recorro entradas ************************************************
+
+			  while($dato = $sql->fetch_assoc()){
 
 //            $marcas[$cont2] = explode(' ',$dato['datetime'])[0];
-            $array[$cont] = $zerorow; //Inizializo
+          //  $array[$cont] = $zerorow; //Inizializo
 
 
             $date = new datetime($dato['datetime']);
 
 
 
-
+if(!isset($marcas['e1'])){
 
 	/********************** Marco entrada **********************************/
 
 										$lastdate = $date; //guardo date como la ultima fecha registrada
-		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code']; // Guardo la marca en el arreglo posicio 0
-		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code'].' '.$cont2; // Guardo la marca en el arreglo posicio 0
-		                $marcas['e'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo posicio 0
-		               // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
-		                $fijo[$cont][2] = "Solo marco entrada!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
-
-
-
-										$lastdate = $date; //guardo date como la ultima fecha registrada
-										$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo
+									//  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code']; // Guardo la marca en el arreglo posicio 0
+									//  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code'].' '.$cont2; // Guardo la marca en el arreglo posicio 0
+										$marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo posicio 0
+									 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+										$fijo[$cont][2] = "Solo marco entrada!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
 
 										//$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' b '.$dato['type_code'] .' '.$cont2; // Guardo la marca en el arreglo
 									 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+									 $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
 
-										$fijo[$cont][2] = "Solo marco salida!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
 
 	/**********************  FIN Marco entrada **********************************/
 
 
-                $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
+		}else{ //si ya se marco una entrada
 
 
-//                if($cont2 == 5){
-//
-//                $marcas[$cont2] = 'hola';
-//                $cont2++;
-//                }
 
-/****************************Script  de filtro de marcas menores a un intervalo dado ***************************************************************/
-                $fecha = new datetime($dato['datetime']);
+
+
+/**************************** Filtro de marcas menores a un intervalo dado ***************************************************************/
+
+
+
+						    $fecha = new datetime($dato['datetime']);
                 $diff = $lastdate->diff($fecha)->format('%H:%i');
 
 								$diferencia = Decimal($diff);
@@ -322,7 +324,7 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 								//$objSheet->setCellValue('I'.$cont, 'dif = '.$diff);
 
 
-
+							$fijo[$cont][2] = 	$fijo[$cont][2]." Diferencia:".$diferencia."Intervalo: ".$intervalo;
 
                 if($diferencia > $intervalo){// si la diferencia con la ultima fecha registrada es mayor al intervalo minimo se continua sino se omite la marca
 
@@ -462,16 +464,18 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 						// if($marcas[0] == ' ' and $marcas[1] == ' ' and $marcas[2] == ' ' and $marcas[3] == ' '  ){
 						// 	unset($marcas);
 						// }
-
+						}
             $cont2++;
         }
 
-//************** RECORRO SALIDAS ***************************************/
+//****************** RECORRO SALIDAS ***************************************/
+
+//	$contOut = 0; //Inicializo contador de salidas
 
 				while($dato = $sql2->fetch_assoc()){
 
 //            $marcas[$cont2] = explode(' ',$dato['datetime'])[0];
-            $array[$cont] = $zerorow; //Inizializo
+
 
 
             $date = new datetime($dato['datetime']);
@@ -480,29 +484,26 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
 
 
-	/********************** Marco entrada **********************************/
+	/********************** Marco Salida **********************************/
 
-										$lastdate = $date; //guardo date como la ultima fecha registrada
-		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code']; // Guardo la marca en el arreglo posicio 0
-		              //  $marcas['e1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' a '.$dato['type_code'].' '.$cont2; // Guardo la marca en el arreglo posicio 0
-		                $marcas['e'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo posicio 0
-		               // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
-		                $fijo[$cont][2] = "Solo marco entrada!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
-
-
-
-										$lastdate = $date; //guardo date como la ultima fecha registrada
+									 	$lastdate = $date; //guardo date como la ultima fecha registrada
 										$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3); // Guardo la marca en el arreglo
 
 										//$marcas['s1'] = substr(explode(' ',$dato['datetime'])[1],0,-3).' b '.$dato['type_code'] .' '.$cont2; // Guardo la marca en el arreglo
 									 // $marcas[$cont2] = explode(' ',$dato['datetime'])[1];
+									if(!isset($marcas['e1'])){
 
 										$fijo[$cont][2] = "Solo marco salida!"; // Lo marco como inconsistencia de antemano y luego lo borro si hay una segunda marca
+										$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
 
-	/**********************  FIN Marco entrada **********************************/
+									}else{ // si ya esta seteada  e1
+												$objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($despintar);
+												$fijo[$cont][2] = " ";
+									}
+
+	/**********************  FIN Marco salida **********************************/
 
 
-                $objSheet->getStyle('A'.($cont+$firstrow-1).':N'.($cont+$firstrow-1))->applyFromArray($pintarInconsistencia); // Pinto inconsistencia de antemano
 
 
 //                if($cont2 == 5){
@@ -511,8 +512,9 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 //                $cont2++;
 //                }
 
-/****************************Script  de filtro de marcas menores a un intervalo dado ***************************************************************/
-                $fecha = new datetime($dato['datetime']);
+/**************************** Filtro de marcas menores a un intervalo dado ***************************************************************/
+
+								$fecha = new datetime($dato['datetime']);
                 $diff = $lastdate->diff($fecha)->format('%H:%i');
 
 								$diferencia = Decimal($diff);
@@ -663,8 +665,9 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
             $cont2++;
         }
+/***************************************************************************************************************/
 /******************* FIN Recorro resultado de consulta sql  ****************************************************/
-
+/***************************************************************************************************************/
 
 
    // $objXLS->getActiveSheet()->fromArray($total, NULL, 'H'.$firstrow );
@@ -672,7 +675,8 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 
 
     $cont2 = 0;
-		// asigno formula a TOTAL del dia correpondiente a esta fila
+	//	$contOut = 0
+		// asigno formula a TOTAL a fila actual (fila $cont)
 		$objSheet->setCellValue('H'.($cont+$firstrow-1), '=SUM(G'.($cont+$firstrow-1).'-F'.($cont+$firstrow-1).')+(E'.($cont+$firstrow-1).'-D'.($cont+$firstrow-1).')');
 
     if(isset($marcas)){
@@ -715,7 +719,7 @@ for($cont = 1; $cont <= $ultimo_dia; $cont++){
 			}
 
 			if(isset($marcas['s1'])){
-				$marc[1] =$marcas['s1'];
+				$marc[1] = $marcas['s1'];
 			}else{
 				$marc[1] = '';
 			}
