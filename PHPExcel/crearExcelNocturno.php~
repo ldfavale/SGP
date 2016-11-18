@@ -333,8 +333,8 @@ if($cont3 == 0){ // si es la primera vez
 
                 if($diferencia > $intervalo){// si la diferencia con la ultima fecha registrada es mayor al intervalo minimo se continua sino se omite la marca
 
-													$type = $dato['type_code'] == 0 ? 'E' : 'S';
-													$inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$type;
+													//$type = $dato['type_code'] == 0 ? 'E' : 'S';
+													$inconsistencias[$cont2] = substr(explode(' ',$dato['datetime'])[1],0,-3).' '.$dato['type_code'];
 													//$lastdate = $fecha;
 													$lastdate = $date;
 													$fijo[$cont][2] = " Marcas de mas!";// esto hay que sacarlo del while y preguntar si $fijo[$cont][2] esta seteado != ''
