@@ -202,7 +202,7 @@ if(isset($_POST['Confirmar'])) {
       <?php
 
             $controlador2 = ControladorE::getInstance();
-            $privilegios= $controlador2->ListarPrivilegios();
+            $privilegios = $controlador2->ListarPrivilegios();
 
             foreach ($privilegios as $privilegio){
 
@@ -230,10 +230,30 @@ if(isset($_POST['Confirmar'])) {
   <div class="col-md-4">
     <select id="" name="horario" class="form-control">
 
+<?php
+      //$controlador3 = ControladorE::getInstance();
+      $horarios = $controlador2->ListarHorarios();
+
+      foreach ($horarios as $horario){
+
+          if($empleado->getHorario() == $horario->getid()){
+              echo '<option selected value="'.$horario->getid().'">'.$horario->getnombre().'</option>';
+          }
+          else{
+              if($_SESSION['tipo']== 1){
+                  echo '<option value="'.$horario->getid().'">'.$horario->getnombre().'</option>';
+              }
+              else{
+                  //echo '<option disabled value="'.$privilegio->getid().'">'.$privilegio->getnombre().'</option>';
+              }
+          }
+      }
+      ?>
+<!--
       <option value="1"> Fijo</option>
       <option value="2"> Global</option>
       <option value="3"> Flexible</option>
-      <option value="4"> Nocturno</option>
+      <option value="4"> Nocturno</option> -->
             <!-- // $controlador2 = ControladorE::getInstance();
             // $privilegios= $controlador2->ListarPrivilegios();
             //

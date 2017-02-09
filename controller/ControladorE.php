@@ -12,6 +12,7 @@
 
 require_once (APP_DIR."/model/Logica/logica.php");
 require_once (APP_DIR."/model/Persistencia/PEmpleado.php");
+require_once (APP_DIR."/model/Persistencia/PHorario.php");
 require_once (APP_DIR."/model/Persistencia/PPrivilegio.php");
 require_once (APP_DIR."/model/Persistencia/PReloj.php");
 require_once (APP_DIR."/model/Persistencia/Reloj/FuncReloj.php");
@@ -202,5 +203,9 @@ class ControladorE{
         //Devuelve un array de privilegio
         return $persistenciaprivilegio->ListarPrivilegios();
     }
-
+    function ListarHorarios(){
+        $persistenciahorario = PHorario::getInstance();
+        //Devuelve un array de privilegio
+        return $persistenciahorario->ListarHorarios();
+    }
 }
