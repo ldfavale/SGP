@@ -1,5 +1,9 @@
 <?php
 
+/*
+Este archivo genera la planilla de contralor para el funcionario cuyo id es pasodo como parametro
+
+*/
 error_reporting(E_ALL);
 include_once 'Classes/PHPExcel.php';
 require '../config/database.php';
@@ -10,7 +14,7 @@ function Decimal($hora)
 	$dec=$desglose[0]+$desglose[1]/60;
 	return $dec;
 }
-
+/*Esta funcion es para quitar los tildes o caracteres que puedan causar problemas*/
 function normaliza($cadena){
     $originales = 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ
 ßàáâãäåæçèéêëìíîïðñòóôõöøùúûýýþÿŔŕ';
